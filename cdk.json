@@ -1,0 +1,64 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/kameleon.ts",
+  "watch": {
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "test"
+    ]
+  },
+  "context": {
+    "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": true,
+    "@aws-cdk/core:stackRelativeExports": true,
+    "@aws-cdk/aws-lambda:recognizeVersionProps": true,
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
+    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/core:enablePartitionLiterals": true,
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "environments": {
+      "dev": {
+        "account": "${AWS_ACCOUNT_ID}",
+        "region": "us-east-1",
+        "domainPrefix": "dev-kameleon",
+        "removalPolicy": "DESTROY",
+        "logRetention": 7,
+        "enableDetailedMonitoring": false,
+        "lambdaMemorySize": 256,
+        "lambdaTimeout": 30
+      },
+      "stage": {
+        "account": "${AWS_ACCOUNT_ID}",
+        "region": "us-east-1",
+        "domainPrefix": "stage-kameleon",
+        "removalPolicy": "RETAIN",
+        "logRetention": 30,
+        "enableDetailedMonitoring": true,
+        "lambdaMemorySize": 512,
+        "lambdaTimeout": 30
+      },
+      "prod": {
+        "account": "${AWS_ACCOUNT_ID}",
+        "region": "us-east-1",
+        "domainPrefix": "kameleon",
+        "removalPolicy": "RETAIN",
+        "logRetention": 90,
+        "enableDetailedMonitoring": true,
+        "lambdaMemorySize": 1024,
+        "lambdaTimeout": 30
+      }
+    },
+    "bedrockModel": "anthropic.claude-3-5-sonnet-20241022-v2:0"
+  }
+}
