@@ -3,9 +3,13 @@ node_modules/
 
 # Build output
 lib/
-*.js
 *.d.ts
 *.js.map
+
+# Compiled JS (but not config files)
+src/**/*.js
+bin/**/*.js
+test/**/*.js
 
 # CDK
 cdk.out/
