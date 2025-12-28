@@ -26,8 +26,9 @@ export class ApiStack extends cdk.Stack {
       description: 'Kameleon PRD Assistant API',
       deployOptions: {
         stageName: environment,
-        loggingLevel: apigateway.MethodLoggingLevel.INFO,
-        dataTraceEnabled: environment === 'dev',
+        // Note: CloudWatch logging disabled until API Gateway account role is configured
+        // loggingLevel: apigateway.MethodLoggingLevel.INFO,
+        // dataTraceEnabled: environment === 'dev',
         metricsEnabled: true,
       },
       defaultCorsPreflightOptions: {
