@@ -29,7 +29,7 @@
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "environments": {
       "dev": {
-        "account": "${AWS_ACCOUNT_ID}",
+        "account": "474957690594",
         "region": "us-east-1",
         "domainPrefix": "dev-kameleon",
         "removalPolicy": "DESTROY",
@@ -39,7 +39,7 @@
         "lambdaTimeout": 30
       },
       "stage": {
-        "account": "${AWS_ACCOUNT_ID}",
+        "account": "474957690594",
         "region": "us-east-1",
         "domainPrefix": "stage-kameleon",
         "removalPolicy": "RETAIN",
@@ -49,7 +49,7 @@
         "lambdaTimeout": 30
       },
       "prod": {
-        "account": "${AWS_ACCOUNT_ID}",
+        "account": "474957690594",
         "region": "us-east-1",
         "domainPrefix": "kameleon",
         "removalPolicy": "RETAIN",

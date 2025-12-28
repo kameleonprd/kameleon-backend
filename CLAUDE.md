@@ -124,8 +124,9 @@ response.internalError(message)  // 500
 
 ## AWS Profile
 
-Use profile `kameleon` for all AWS operations:
+Use profile `kama` for all AWS operations:
 
 ```bash
-export AWS_PROFILE=kameleon
+export AWS_PROFILE=kama
+aws sso login --profile kama
 ```
