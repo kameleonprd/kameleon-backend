@@ -3,7 +3,7 @@ import httpJsonBodyParser from '@middy/http-json-body-parser';
 import httpErrorHandler from '@middy/http-error-handler';
 import httpCors from '@middy/http-cors';
 import { Logger } from '@aws-lambda-powertools/logger';
-import { Metrics, MetricUnit } from '@aws-lambda-powertools/metrics';
+import { Metrics } from '@aws-lambda-powertools/metrics';
 import { Tracer } from '@aws-lambda-powertools/tracer';
 import { injectLambdaContext } from '@aws-lambda-powertools/logger/middleware';
 import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
@@ -67,7 +67,7 @@ export type ValidatedHandler<TBody = unknown, TPath = unknown, TQuery = unknown>
 // Get User ID from Cognito Claims
 // ============================================================
 
-export function getUserId(event: APIGatewayProxyEvent): string {
+export function getUserId(event: APIGatewayProxyEvent | ValidatedAPIGatewayProxyEvent): string {
   const claims = event.requestContext?.authorizer?.claims;
   const userId = claims?.sub;
   if (!userId) {
