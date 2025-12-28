@@ -1,9 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output
-lib/
-*.d.ts
+# Build output (but keep lib/stacks source files)
+lib/**/*.js
+lib/**/*.d.ts
 *.js.map
 
 # Compiled JS (but not config files)
