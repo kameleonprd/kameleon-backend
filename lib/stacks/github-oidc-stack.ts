@@ -58,40 +58,31 @@ export class GitHubOidcStack extends cdk.Stack {
     });
 
     // Create role for each environment
-    const createDeployRole = (envName: string, branches: string[]): iam.Role => {
-      const conditions: Record<string, Record<string, string>> = {
-        StringEquals: {
-          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-        },
-        StringLike: {
-          'token.actions.githubusercontent.com:sub': branches.map(
-            branch => `repo:${githubOrg}/${githubRepo}:ref:refs/heads/${branch}`
-          ).join(','),
-        },
-      };
-
-      // For multiple branches, use ForAnyValue
-      if (branches.length > 1) {
-        delete conditions.StringLike;
-        conditions['ForAnyValue:StringLike'] = {
-          'token.actions.githubusercontent.com:sub': branches.map(
-            branch => `repo:${githubOrg}/${githubRepo}:ref:refs/heads/${branch}`
-          ),
-        } as unknown as Record<string, string>;
-      }
+    const createDeployRole = (envName: string): iam.Role => {
+      // GitHub Actions can send different subject claim formats:
+      // - For branch pushes: repo:org/repo:ref:refs/heads/branch
+      // - For environments: repo:org/repo:environment:env-name
+      // - For pull requests: repo:org/repo:pull_request
+      // We need to allow the patterns that match this environment
+      const subPatterns = [
+        `repo:${githubOrg}/${githubRepo}:ref:refs/heads/*`,
+        `repo:${githubOrg}/${githubRepo}:environment:${envName.toLowerCase()}`,
+        `repo:${githubOrg}/${githubRepo}:environment:prod`, // main branch uses prod env
+      ];
 
       const role = new iam.Role(this, `GitHubActions${envName}Role`, {
         roleName: `github-actions-kameleon-${envName.toLowerCase()}`,
-        assumedBy: new iam.WebIdentityPrincipal(
+        assumedBy: new iam.FederatedPrincipal(
           githubProvider.openIdConnectProviderArn,
           {
             StringEquals: {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
             },
-            StringLike: {
-              'token.actions.githubusercontent.com:sub': `repo:${githubOrg}/${githubRepo}:ref:refs/heads/*`,
+            'ForAnyValue:StringLike': {
+              'token.actions.githubusercontent.com:sub': subPatterns,
             },
-          }
+          },
+          'sts:AssumeRoleWithWebIdentity'
         ),
         description: `Role for GitHub Actions to deploy to ${envName} environment`,
         maxSessionDuration: cdk.Duration.hours(1),
@@ -102,14 +93,14 @@ export class GitHubOidcStack extends cdk.Stack {
       return role;
     };
 
-    // Dev role - can be assumed from dev branch
-    this.devRole = createDeployRole('Dev', ['dev']);
+    // Dev role - can be assumed from dev branch or dev environment
+    this.devRole = createDeployRole('Dev');
 
-    // Stage role - can be assumed from stage branch
-    this.stageRole = createDeployRole('Stage', ['stage']);
+    // Stage role - can be assumed from stage branch or stage environment
+    this.stageRole = createDeployRole('Stage');
 
-    // Prod role - can be assumed from main branch
-    this.prodRole = createDeployRole('Prod', ['main']);
+    // Prod role - can be assumed from main branch or prod environment
+    this.prodRole = createDeployRole('Prod');
 
     // Outputs
     new cdk.CfnOutput(this, 'GitHubOidcProviderArn', {

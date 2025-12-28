@@ -65,6 +65,27 @@ export class ApiStack extends cdk.Stack {
       methodResponses: [{ statusCode: '200' }],
     });
 
+    // Protected me endpoint (requires auth) - returns user info from token
+    const meResource = this.api.root.addResource('me');
+    meResource.addMethod('GET', new apigateway.MockIntegration({
+      integrationResponses: [{
+        statusCode: '200',
+        responseTemplates: {
+          'application/json': JSON.stringify({
+            message: 'Authenticated',
+            environment,
+          }),
+        },
+      }],
+      requestTemplates: {
+        'application/json': '{"statusCode": 200}',
+      },
+    }), {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+      methodResponses: [{ statusCode: '200' }],
+    });
+
     // TODO: Add Lambda handlers for axioms, templates, personas, documents, reviews
 
     // Outputs
